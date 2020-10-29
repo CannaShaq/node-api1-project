@@ -1,4 +1,4 @@
-const { response } = require('express');
+const { response, request } = require('express');
 const express = require('express');
 const shortid = require('shortid');
 
@@ -15,16 +15,24 @@ server.post('/api/users', (request, response) => {
     const userInfo = request.body;
 
     userInfo.id = shortid.generate();
-    userInfo.name = "";
-    userInfo.bio = "";
-    users.push(userInfo);
-
-    response.status(201).json(userInfo);
+    if(request.body.name === "" || request.body.bio === ""){
+        response.status(400).json({message: "Please provie name and bio for user."})
+    }else{
+        users.push(userInfo);
+        response.status(201).json(userInfo);
+    }
 })
 
 //READ- get user array 
-server.get('api/users', (request, response) => {
+server.get('/api/users', (request, response) => {
     response.status(200).json(users);
+})
+
+server.get('/api/users/:id', () => {
+
+    //need to check if user id even exist
+
+    response.status(200).json(users[id]);
 })
 
 //UPDATE
@@ -74,7 +82,7 @@ server.delete('/api/users/:id', (request, response) => {
 })
 
 server.get('/', (request, response) => {
-    response.json({message: "test!"});
+    response.json(users);
 })
 
 
